@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Sheriff - CBT Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .timer {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.2);
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+        }
+
+        .start-screen, .test-screen, .results-screen {
+            padding: 40px;
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-screen h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .instructions {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: left;
+            border-left: 5px solid #3498db;
+        }
+
+        .instructions h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .instructions ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .instructions li {
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .instructions li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .start-btn, .submit-btn, .restart-btn {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .start-btn:hover, .submit-btn:hover, .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .question-container {
+            background: #f8f9fa;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            background: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50px;
+            font-weight: bold;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e9ecef;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+
+        .option.selected {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            height: 10px;
+            border-radius: 5px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .results-screen {
+            text-align: center;
+        }
+
+        .score-display {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .score-display h2 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .corrections {
+            text-align: left;
+            margin-top: 40px;
+        }
+
+        .correction-item {
+            background: #f8f9fa;
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .correction-item.correct {
+            border-left-color: #27ae60;
+        }
+
+        .correct-answer {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .wrong-answer {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .timer {
+                position: static;
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Knowledge Sheriff</h1>
+            <p class="subtitle">Computer Knowledge & MS Word Formatting Test</p>
+            <div class="timer hidden" id="timer">⏰ 40:00</div>
+        </div>
+
+        <!-- Start Screen -->
+        <div class="start-screen" id="startScreen">
+            <h2>Welcome to Knowledge Sheriff CBT</h2>
+            <div class="instructions">
+                <h3>Test Instructions:</h3>
+                <ul>
+                    <li>This test contains 50 multiple-choice questions</li>
+                    <li>Time limit: 40 minutes</li>
+                    <li>Questions cover basic computer knowledge and Microsoft Word formatting</li>
+                    <li>Select only one answer per question</li>
+                    <li>You can review and change answers before submitting</li>
+                    <li>Results and corrections will be shown after submission</li>
+                    <li>Click "Start Test" when you're ready to begin</li>
+                </ul>
+            </div>
+            <button class="start-btn" onclick="startTest()">Start Test</button>
+        </div>
+
+        <!-- Test Screen -->
+        <div class="test-screen hidden" id="testScreen">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 2%"></div>
+            </div>
+            <div id="questionContainer"></div>
+            <div class="submit-section">
+                <button class="submit-btn" onclick="submitTest()">Submit Test</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="results-screen hidden" id="resultsScreen">
+            <div class="score-display" id="scoreDisplay">
+                <h2 id="finalScore">0/50</h2>
+                <p id="percentage">0%</p>
+                <p id="grade">Grade: F</p>
+            </div>
+            <button class="restart-btn" onclick="restartTest()">Take Test Again</button>
+            <div class="corrections" id="corrections"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 0;
+        let userAnswers = {};
+        let timeLeft = 40 * 60; // 40 minutes in seconds
+        let timerInterval;
+
+        const questions = [
+            // Basic Computer Knowledge (25 questions)
+            {
+                question: "What does CPU stand for?",
+                options: ["Central Processing Unit", "Computer Personal Unit", "Central Program Unit", "Computer Processing Unit"],
+                correct: 0
+            },
+            {
+                question: "Which of the following is an input device?",
+                options: ["Monitor", "Printer", "Keyboard", "Speaker"],
+                correct: 2
+            },
+            {
+                question: "What is the main function of RAM?",
+                options: ["Permanent storage", "Temporary storage", "Processing data", "Displaying graphics"],
+                correct: 1
+            },
+            {
+                question: "Which key combination is used to copy text?",
+                options: ["Ctrl + X", "Ctrl + C", "Ctrl + V", "Ctrl + Z"],
+                correct: 1
+            },
+            {
+                question: "What does GUI stand for?",
+                options: ["General User Interface", "Graphical User Interface", "Global User Interface", "Generic User Interface"],
+                correct: 1
+            },
+            {
+                question: "Which of the following is an operating system?",
+                options: ["Microsoft Word", "Adobe Photoshop", "Windows 10", "Google Chrome"],
+                correct: 2
+            },
+            {
+                question: "What is the function of a firewall?",
+                options: ["Cool the computer", "Prevent unauthorized access", "Increase processing speed", "Store data"],
+                correct: 1
+            },
+            {
+                question: "Which storage device has the largest capacity?",
+                options: ["Floppy Disk", "CD-ROM", "DVD", "Hard Drive"],
+                correct: 3
+            },
+            {
+                question: "What does HTTP stand for?",
+                options: ["HyperText Transfer Protocol", "HyperText Transport Protocol", "HyperTech Transfer Protocol", "HyperTech Transport Protocol"],
+                correct: 0
+            },
+            {
+                question: "Which key is used to delete characters to the left of the cursor?",
+                options: ["Delete", "Backspace", "Insert", "Home"],
+                correct: 1
+            },
+            {
+                question: "What is the default file extension for executable files in Windows?",
+                options: [".txt", ".doc", ".exe", ".jpg"],
+                correct: 2
+            },
+            {
+                question: "Which component is considered the 'brain' of the computer?",
+                options: ["Hard Drive", "RAM", "CPU", "Motherboard"],
+                correct: 2
+            },
+            {
+                question: "What does URL stand for?",
+                options: ["Universal Resource Locator", "Uniform Resource Locator", "Universal Reference Link", "Uniform Reference Link"],
+                correct: 1
+            },
+            {
+                question: "Which of the following is NOT an antivirus software?",
+                options: ["Norton", "McAfee", "Avast", "Photoshop"],
+                correct: 3
+            },
+            {
+                question: "What is the purpose of system restore?",
+                options: ["Delete files", "Restore system to previous state", "Install software", "Format hard drive"],
+                correct: 1
+            },
+            {
+                question: "Which protocol is used for sending emails?",
+                options: ["HTTP", "FTP", "SMTP", "TCP"],
+                correct: 2
+            },
+            {
+                question: "What does PDF stand for?",
+                options: ["Portable Document Format", "Personal Document File", "Public Document Format", "Private Document File"],
+                correct: 0
+            },
+            {
+                question: "Which key combination is used to select all text?",
+                options: ["Ctrl + A", "Ctrl + S", "Ctrl + D", "Ctrl + F"],
+                correct: 0
+            },
+            {
+                question: "What is the function of Task Manager?",
+                options: ["Create tasks", "Monitor system performance", "Schedule meetings", "Manage files"],
+                correct: 1
+            },
+            {
+                question: "Which of the following is a web browser?",
+                options: ["Microsoft Word", "Firefox", "Excel", "PowerPoint"],
+                correct: 1
+            },
+            {
+                question: "What does LAN stand for?",
+                options: ["Large Area Network", "Local Area Network", "Long Access Network", "Limited Area Network"],
+                correct: 1
+            },
+            {
+                question: "Which device is used to connect to the internet?",
+                options: ["Printer", "Scanner", "Modem", "Speaker"],
+                correct: 2
+            },
+            {
+                question: "What is the smallest unit of data in computing?",
+                options: ["Byte", "Bit", "Kilobyte", "Megabyte"],
+                correct: 1
+            },
+            {
+                question: "Which key is used to refresh a webpage?",
+                options: ["F4", "F5", "F6", "F7"],
+                correct: 1
+            },
+            {
+                question: "What does USB stand for?",
+                options: ["Universal Serial Bus", "Universal System Bus", "Uniform Serial Bus", "Uniform System Bus"],
+                correct: 0
+            },
+
+            // Microsoft Word Formatting (25 questions)
+            {
+                question: "Which menu contains the Bold formatting option in MS Word?",
+                options: ["Insert", "Home", "View", "File"],
+                correct: 1
+            },
+            {
+                question: "What is the keyboard shortcut for Bold formatting?",
+                options: ["Ctrl + I", "Ctrl + U", "Ctrl + B", "Ctrl + D"],
+                correct: 2
+            },
+            {
+                question: "Which option is used to change text alignment in Word?",
+                options: ["Font", "Paragraph", "Styles", "Editing"],
+                correct: 1
+            },
+            {
+                question: "What is the default font in Microsoft Word 2016?",
+                options: ["Times New Roman", "Arial", "Calibri", "Cambria"],
+                correct: 2
+            },
+            {
+                question: "Which key combination is used for Italic formatting?",
+                options: ["Ctrl + I", "Ctrl + U", "Ctrl + B", "Ctrl + L"],
+                correct: 0
+            },
+            {
+                question: "How do you insert a page break in Word?",
+                options: ["Enter key twice", "Ctrl + Enter", "Shift + Enter", "Alt + Enter"],
+                correct: 1
+            },
+            {
+                question: "Which tab contains the Header and Footer options?",
+                options: ["Home", "Insert", "Design", "Layout"],
+                correct: 1
+            },
+            {
+                question: "What is the keyboard shortcut for Underline?",
+                options: ["Ctrl + U", "Ctrl + L", "Ctrl + N", "Ctrl + K"],
+                correct: 0
+            },
+            {
+                question: "Which option is used to change line spacing?",
+                options: ["Font dialog", "Paragraph dialog", "Page Setup", "Insert menu"],
+                correct: 1
+            },
+            {
+                question: "How do you create a bulleted list?",
+                options: ["Home > Bullets", "Insert > Symbols", "Layout > Bullets", "View > Bullets"],
+                correct: 0
+            },
+            {
+                question: "Which alignment option centers text?",
+                options: ["Left", "Center", "Right", "Justify"],
+                correct: 1
+            },
+            {
+                question: "What does Ctrl + Z do in Word?",
+                options: ["Redo", "Undo", "Cut", "Paste"],
+                correct: 1
+            },
+            {
+                question: "How do you change font size?",
+                options: ["Home > Font Size", "Insert > Font", "Design > Themes", "Layout > Size"],
+                correct: 0
+            },
+            {
+                question: "Which feature automatically corrects common typing errors?",
+                options: ["Spell Check", "AutoCorrect", "Grammar Check", "AutoText"],
+                correct: 1
+            },
+            {
+                question: "How do you insert a table in Word?",
+                options: ["Home > Table", "Insert > Table", "Layout > Table", "Design > Table"],
+                correct: 1
+            },
+            {
+                question: "What is the keyboard shortcut to find text?",
+                options: ["Ctrl + F", "Ctrl + H", "Ctrl + G", "Ctrl + L"],
+                correct: 0
+            },
+            {
+                question: "Which option creates a hanging indent?",
+                options: ["Increase Indent", "Decrease Indent", "Paragraph dialog", "Tab settings"],
+                correct: 2
+            },
+            {
+                question: "How do you insert page numbers?",
+                options: ["Insert > Page Numbers", "Home > Numbers", "Layout > Numbers", "Design > Numbers"],
+                correct: 0
+            },
+            {
+                question: "Which view shows how the document will look when printed?",
+                options: ["Draft", "Web Layout", "Print Layout", "Outline"],
+                correct: 2
+            },
+            {
+                question: "What does Ctrl + Y do in Word?",
+                options: ["Undo", "Redo", "Cut", "Copy"],
+                correct: 1
+            },
+            {
+                question: "How do you change text color?",
+                options: ["Home > Font Color", "Insert > Color", "Design > Colors", "Layout > Text"],
+                correct: 0
+            },
+            {
+                question: "Which option creates a numbered list?",
+                options: ["Home > Bullets", "Home > Numbering", "Insert > Numbers", "Layout > List"],
+                correct: 1
+            },
+            {
+                question: "What is the keyboard shortcut for Print Preview?",
+                options: ["Ctrl + P", "Ctrl + V", "Ctrl + O", "Ctrl + N"],
+                correct: 0
+            },
+            {
+                question: "How do you apply superscript formatting?",
+                options: ["Ctrl + Shift + =", "Ctrl + =", "Ctrl + Shift + +", "Ctrl + +"],
+                correct: 0
+            },
+            {
+                question: "Which feature helps maintain consistent formatting throughout a document?",
+                options: ["AutoFormat", "Styles", "Templates", "Themes"],
+                correct: 1
+            }
+        ];
+
+        function startTest() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('testScreen').classList.remove('hidden');
+            document.getElementById('timer').classList.remove('hidden');
+            
+            startTimer();
+            displayQuestion();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitTest();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `⏰ ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function displayQuestion() {
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = '';
+
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-container';
+                
+                questionDiv.innerHTML = `
+                    <div class="question-header">
+                        <span class="question-number">Question ${index + 1}</span>
+                    </div>
+                    <div class="question-text">${q.question}</div>
+                    <div class="options">
+                        ${q.options.map((option, optIndex) => `
+                            <div class="option" onclick="selectAnswer(${index}, ${optIndex})">
+                                <input type="radio" name="q${index}" value="${optIndex}" 
+                                    ${userAnswers[index] === optIndex ? 'checked' : ''}>
+                                <span>${String.fromCharCode(65 + optIndex)}. ${option}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(questionDiv);
+            });
+
+            updateProgress();
+        }
+
+        function selectAnswer(questionIndex, optionIndex) {
+            userAnswers[questionIndex] = optionIndex;
+            
+            // Update radio button selection
+            const radios = document.querySelectorAll(`input[name="q${questionIndex}"]`);
+            radios.forEach((radio, index) => {
+                radio.checked = index === optionIndex;
+                radio.parentElement.classList.toggle('selected', index === optionIndex);
+            });
+            
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(userAnswers).length;
+            const percentage = (answered / questions.length) * 100;
+            document.getElementById('progressFill').style.width = `${percentage}%`;
+        }
+
+        function submitTest() {
+            clearInterval(timerInterval);
+            
+            // Calculate score
+            let correctAnswers = 0;
+            questions.forEach((q, index) => {
+                if (userAnswers[index] === q.correct) {
+                    correctAnswers++;
+                }
+            });
+
+            const percentage = Math.round((correctAnswers / questions.length) * 100);
+            let grade;
+            
+            if (percentage >= 90) grade = 'A+';
+            else if (percentage >= 80) grade = 'A';
+            else if (percentage >= 70) grade = 'B';
+            else if (percentage >= 60) grade = 'C';
+            else if (percentage >= 50) grade = 'D';
+            else grade = 'F';
+
+            // Show results
+            document.getElementById('testScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            document.getElementById('timer').classList.add('hidden');
+            
+            document.getElementById('finalScore').textContent = `${correctAnswers}/${questions.length}`;
+            document.getElementById('percentage').textContent = `${percentage}%`;
+            document.getElementById('grade').textContent = `Grade: ${grade}`;
+            
+            showCorrections();
+        }
+
+        function showCorrections() {
+            const correctionsDiv = document.getElementById('corrections');
+            correctionsDiv.innerHTML = '<h2>Answer Review</h2>';
+            
+            questions.forEach((q, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === q.correct;
+                
+                const correctionDiv = document.createElement('div');
+                correctionDiv.className = `correction-item ${isCorrect ? 'correct' : ''}`;
+                
+                correctionDiv.innerHTML = `
+                    <div class="question-text"><strong>Question ${index + 1}:</strong> ${q.question}</div>
+                    <div style="margin: 10px 0;">
+                        <div><strong>Your Answer:</strong> 
+                            <span class="${isCorrect ? 'correct-answer' : 'wrong-answer'}">
+                                ${userAnswer !== undefined ? String.fromCharCode(65 + userAnswer) + '. ' + q.options[userAnswer] : 'Not answered'}
+                            </span>
+                        </div>
+                        ${!isCorrect ? `<div><strong>Correct Answer:</strong> 
+                            <span class="correct-answer">${String.fromCharCode(65 + q.correct)}. ${q.options[q.correct]}</span>
+                        </div>` : ''}
+                    </div>
+                `;
+                
+                correctionsDiv.appendChild(correctionDiv);
+            });
+        }
+
+        function restartTest() {
+            // Reset all variables
+            currentQuestion = 0;
+            userAnswers = {};
+            timeLeft = 40 * 60;
+            
+            // Show start screen
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            document.getElementById('timer').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
